@@ -95,8 +95,8 @@ const addUsers = (request, response, body) => {
 const notReal = (request, response) => {
     //should default to good
     const responseJSON = {
-        message: 'This is a successful response :)',
-        id: 'success'
+        message: 'This was successfully not found',
+        id: 'notFound'
     }
 
     respondJSON(request, response, 200, responseJSON);

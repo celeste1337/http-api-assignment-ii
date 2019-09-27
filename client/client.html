@@ -39,14 +39,15 @@
           content.innerHTML = '<b>we didnt implement this sozzz</b>';
           break;
       }
-      
-      if(xhr.response.users) {
+      console.log(xhr.response);
+
+      if(xhr.response) {
         const obj = xhr.response;
         console.log(obj);
 
-        content.innerHTML += `<p>${obj.users}</p>`;
+        content.innerHTML += `<p>${obj}</p>`;
       } else {
-        content.innerHTML += `<p>there are none</p>`;
+        content.innerHTML += `<p>there are none/this is probably a HEAD call</p>`;
       }
 /*       } else if (method === "HEAD") {
         switch(xhr.status) {
