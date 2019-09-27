@@ -6,9 +6,9 @@ const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-console.log("pp");
+console.log('pp');
 
-//more like assignment 1! fill me out :)
+// more like assignment 1! fill me out :)
 const urlStruct = {
   GET: {
     '/': htmlHandler.getIndex,
@@ -21,14 +21,14 @@ const urlStruct = {
     '/notReal': jsonHandler.notReal,
   },
   HEAD: {
-    //these should all be meta ones! bc no message :)
+    // these should all be meta ones! bc no message :)
     '/getUsers': jsonHandler.getUsersMeta,
     '/notReal': jsonHandler.notRealMeta,
-    notFound: jsonHandler.notFoundMeta
+    notFound: jsonHandler.notFoundMeta,
   },
 };
 
-const handlePost = (request, response, parsedUrl) => {
+const handlePost = (request, response) => {
   const res = response;
   const body = [];
 
@@ -47,24 +47,22 @@ const handlePost = (request, response, parsedUrl) => {
     const bodyParams = query.parse(bodyString);
 
     jsonHandler.addUsers(request, res, bodyParams);
-  })
-}
+  });
+};
 
 const onRequest = (request, response) => {
-  
   const parsedUrl = url.parse(request.url);
   const params = parsedUrl.query;
 
   console.log(parsedUrl.pathname);
 
-  if (request.method === "POST" && parsedUrl.pathname === "/addUsers") {
+  if (request.method === 'POST' && parsedUrl.pathname === '/addUsers') {
     handlePost(request, response, parsedUrl);
-  } else if (urlStruct[request.method][parsedUrl.pathname]){
+  } else if (urlStruct[request.method][parsedUrl.pathname]) {
     urlStruct[request.method][parsedUrl.pathname](request, response, params);
   } else {
     urlStruct.GET.notFound(request, response);
   }
-
 };
 
 http.createServer(onRequest).listen(port);
