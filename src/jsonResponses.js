@@ -1,8 +1,19 @@
+const users = {};
+
 const respondJSON = (request, response, status, object) => {
     response.writeHead(status, { 'Content-Type': 'application/json' });
     response.write(JSON.stringify(object));
     response.end();
 };
+
+const respondJSONMeta = (request, response, status, type) => {
+    const headers = {
+      'Content-Type': type,
+    };
+  
+    response.writeHead(status, headers);
+    response.end();
+  };
 
 const success = (request, response) => {
     const responseJSON = {
@@ -11,6 +22,8 @@ const success = (request, response) => {
 
     respondJSON(request, response, 200, responseJSON);
 };
+
+const getSuccessMeta = (request, response, type) => respondJSONMeta(request, response, 200, type);
 
 const badRequest = (request, response, params) => {
     const responseJSON = {
@@ -35,8 +48,70 @@ const notFound = (request, response) => {
     respondJSON(request, response, 404, responseJSON);
 };
 
+const notFoundMeta = (request, response, type) => respondJSONMeta(request, response, 404, type);
+
+const getUsers = (request, response) => {
+    //should default to good
+    const responseJSON = {
+        users,
+    }
+
+    respondJSON(request, response, 200, responseJSON);
+};
+
+const getUsersMeta = (request, response, type) => respondJSONMeta(request, response, 200, type);
+
+const addUsers = (request, response, body) => {
+    const responseJSON = {
+        message: 'name n age r required',
+    };
+
+    if(!body.name || !body.age) {
+        respondJSON.id = 'missingParams';
+        return respondJSON(request, response, 400, responseJSON);
+    }
+
+    let responseCode = 201;
+
+    if(users[body.name]) {
+        responseCode = 204;
+    } else {
+        users[body.name] = {};
+    }
+
+    users[body.name].name = body.name;
+    users[body.name].age = body.age;
+
+    if(responseCode === 201) {
+        responseJSON.message = 'created successfully!';
+        return respondJSON(request, response, responseCode, responseJSON);
+    }
+
+    return respondJSONMeta(request, response, responseCode);
+};
+
+const notReal = (request, response) => {
+    //should default to good
+    const responseJSON = {
+        message: 'This is a successful response :)',
+        id: 'success'
+    }
+
+    respondJSON(request, response, 200, responseJSON);
+};
+
+const notRealMeta = (request, response, type) => respondJSONMeta(request, response, 404, type);
+
+//dont forget to add the meta ones
 module.exports = {
     success,
+    getSuccessMeta,
     badRequest,
     notFound,
+    notFoundMeta,
+    getUsers,
+    getUsersMeta,
+    addUsers,
+    notReal,
+    notRealMeta,
 };

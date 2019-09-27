@@ -1,0 +1,21 @@
+WEB TO DO:
+- do all the GET/HEAD/POST calls in server.js
+- make the meta responses
+- make the users obj (?)
+- FIX onrequest to check for the type (get/head/post)
+
+
+CELESTE FIX THE NAME AGE ADD USER BTN PLS
+
+
+
+CRITERIA:
+[x] loads client page as home
+[x] loads css
+[] URLS with AJAX (send btn)
+[] URLS directly to URL (GET)
+[] URLS with AJAX as POST, (add user btn)
+[] AJAX req should not parse JSON for HEAD REQUESTS !
+[] AJAX req should parse JSON for get/post
+[] AJAX should use status codes
+[] JSON failures should have a msg and id
