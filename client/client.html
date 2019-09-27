@@ -7,45 +7,48 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
-    const handleResponse = (xhr, parseResponse) => {
-      const method = xhr.getResponseHeader('HTTP-method');
+    const handleResponse = (xhr) => {
       const content = document.querySelector('#content');
+
+      switch(xhr.status) {
+        case 200:
+          content.innerHTML = '<b>success</b>';
+          break;
+        case 201:
+          content.innerHTML = '<b>created</b>';
+          break;
+        case 400:
+          content.innerHTML = '<b>bad request</b>';
+          break;
+        case 404:
+          content.innerHTML = '<b>not found quirky gorl</b>';
+          break;
+        case 401:
+          content.innerHTML = '<b>unauthorized .</b>';
+          break;
+        case 403:
+          content.innerHTML = '<b>FORBIDDEN</b>';
+          break;
+        case 500:
+          content.innerHTML = '<b>internal error <3</b>';
+          break;
+        case 501:
+          content.innerHTML = '<b>not implemeneted :)</b>';
+          break;
+        default:
+          content.innerHTML = '<b>we didnt implement this sozzz</b>';
+          break;
+      }
       
-      if(method === "GET" || method === "POST") {
-        switch(xhr.status) {
-          case 200:
-            content.innerHTML = '<b>success</b>';
-            break;
-          case 400:
-            content.innerHTML = '<b>bad request</b>';
-            break;
-          case 404:
-            content.innerHTML = '<b>not found quirky gorl</b>';
-            break;
-          case 401:
-            content.innerHTML = '<b>unauthorized .</b>';
-            break;
-          case 403:
-            content.innerHTML = '<b>FORBIDDEN</b>';
-            break;
-          case 500:
-            content.innerHTML = '<b>internal error <3</b>';
-            break;
-          case 501:
-            content.innerHTML = '<b>not implemeneted :)</b>';
-            break;
-          default:
-            content.innerHTML = '<b>we didnt implement this sozzz</b>';
-            break;
-        }
+      if(xhr.response.users) {
+        const obj = xhr.response;
+        console.log(obj);
 
-        if(parseResponse) {
-          const obj = JSON.parse(xhr.response);
-          console.log(obj.message);
-
-          content.innerHTML += `<p>${obj.message}</p>`;
-        }
-      } else if (method === "HEAD") {
+        content.innerHTML += `<p>${obj.users}</p>`;
+      } else {
+        content.innerHTML += `<p>there are none</p>`;
+      }
+/*       } else if (method === "HEAD") {
         switch(xhr.status) {
           case 204:
             content.innerHTML = '<b>updated. no content</b>';
@@ -57,27 +60,49 @@
             content.innerHTML = '<b>success</b>';
             break;
         }
-      }
+      } */
     };
 
     const requestUpdate = (e, totalPage) => {
       console.log("request update called");
-      //name and age val
-      //ADD ME AAAAAAAAAAAAAAAA
+      //request stuff, request method and the url (/getUsers, etc)
+      const nameAction = totalPage.getAttribute('action');
+      const nameMethod = totalPage.getAttribute('method');
+
+      const nameField = document.querySelector('#nameField').value;
+      const ageField = document.querySelector('#ageField').value;
 
       //dropdowns
       const page = document.querySelector('#urlField').value;
       const method = document.querySelector('#methodSelect').value;
-
-
+      
       const xhr = new XMLHttpRequest();
-      xhr.open(method, page);
 
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.setRequestHeader('Accept', 'application/json');
+      //get user
+      if(e.target.id === 'userForm') {
+        xhr.open(method, page);
 
-      xhr.onload = () => handleResponse(xhr, true);
-      xhr.send();
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('Accept', 'application/json');
+
+        xhr.onload = () => handleResponse(xhr);
+
+        xhr.send();
+        console.log("sent");
+      } else if (e.target.id === 'nameForm') {
+        xhr.open('POST', '/addUsers');
+
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('Accept', 'application/json');
+
+        //
+        console.log(xhr);
+
+        const formData = `name=${nameField}&age=${ageField}`;
+        xhr.send(formData);
+        console.log("sent");
+        xhr.onload = () => handleResponse(xhr);
+      }
 
       e.preventDefault();
       //prevents DOM event bubbling
@@ -90,10 +115,13 @@
       const userForm = document.querySelector("#userForm");
 
       console.log("init");
-      const getResponses = (e) => requestUpdate(e, totalPage);
+      const getResponses = (e) => 
+      requestUpdate(e, totalPage);
+      
       
       nameForm.addEventListener('submit', getResponses);
       userForm.addEventListener('submit', getResponses);
+
     };
 
     window.onload = init;

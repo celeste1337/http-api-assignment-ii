@@ -87,6 +87,8 @@ const addUsers = (request, response, body) => {
         return respondJSON(request, response, responseCode, responseJSON);
     }
 
+    console.log("added");
+
     return respondJSONMeta(request, response, responseCode);
 };
 

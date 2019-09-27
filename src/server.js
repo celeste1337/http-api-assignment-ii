@@ -29,42 +29,42 @@ const urlStruct = {
 };
 
 const handlePost = (request, response, parsedUrl) => {
-  if(parsedUrl.pathname === '/addUser') {
-    const res = response;
-    const body = [];
+  const res = response;
+  const body = [];
 
-    request.on('error', (err) => {
-      console.dir(err);
-      res.statusCode = 400;
-      res.end();
-    });
+  request.on('error', (err) => {
+    console.dir(err);
+    res.statusCode = 400;
+    res.end();
+  });
 
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    });
+  request.on('data', (chunk) => {
+    body.push(chunk);
+  });
 
-    request.on('end', () => {
-      const bodyString = Buffer.concat(body).toString();
-      const bodyParams = query.parse(bodyString);
+  request.on('end', () => {
+    const bodyString = Buffer.concat(body).toString();
+    const bodyParams = query.parse(bodyString);
 
-      jsonHandler.addUser(request, res, bodyParams);
-    })
-  }
-
+    jsonHandler.addUsers(request, res, bodyParams);
+  })
 }
 
 const onRequest = (request, response) => {
+  
   const parsedUrl = url.parse(request.url);
+  const params = parsedUrl.query;
 
-  if(urlStruct[request.method] === 'POST') {
+  console.log(parsedUrl.pathname);
+
+  if (request.method === "POST" && parsedUrl.pathname === "/addUsers") {
     handlePost(request, response, parsedUrl);
+  } else if (urlStruct[request.method][parsedUrl.pathname]){
+    urlStruct[request.method][parsedUrl.pathname](request, response, params);
   } else {
-    if (urlStruct[request.method][parsedUrl.pathname]) {
-      urlStruct[request.method][parsedUrl.pathname](request, response);
-    } else {
-      urlStruct.GET.notFound(request, response);
-    }
+    urlStruct.GET.notFound(request, response);
   }
+
 };
 
 http.createServer(onRequest).listen(port);
